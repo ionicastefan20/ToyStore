@@ -3,7 +3,12 @@ package com.toy_store.marketing;
 import com.toy_store.financial.*;
 import com.toy_store.production.*;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import com.opencsv.CSVReader;
 
 public class Store {
 //    private final int DEFAULT_ARRAY_SIZE = 8;
@@ -11,8 +16,8 @@ public class Store {
     private static Store instance = null;
     private String name;
     private Currency currency;
-    private Product[] products;
-    private Manufacturer[] manufacturers;
+    private List<Product> products;
+    private List<Manufacturer> manufacturers;
 
 
     public static Store getInstance() {
@@ -25,16 +30,25 @@ public class Store {
     private Store(String name, Currency currency) {
         this.name = name;
         this.currency = currency;
-        this.products = new Product[1];
-        this.manufacturers = new Manufacturer[1];
+        this.products = new ArrayList<>();
+        this.manufacturers = new ArrayList<>();
         this.instance = this;
     }
 
-    Product[] readCSV(String filename) {
-        return new Product[1];
+    List<Product> readCSV(String filename) {
+        CSVReader reader = null;
+        try {
+            reader = new CSVReader(new FileReader("amazon_co-ecommerce_sample.csv"));
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        }
+
+        return this.products;
     }
 
-    void addProduct(Product product) throws DuplicateProductException {}
+    void addProduct(Product product) throws DuplicateProductException {
+
+    }
 
     void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {}
 

@@ -15,18 +15,6 @@ public class Currency {
         this.parityToEur = parityToEur;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public double getParityToEur() {
-        return parityToEur;
-    }
-
     void updateParity(double parityToEUR) {
         this.parityToEur = parityToEUR;
     }

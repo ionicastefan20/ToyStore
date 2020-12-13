@@ -5,12 +5,4 @@ public class Manufacturer {
     int countProducts;
 
     public Manufacturer() {}
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCountProducts() {
-        return countProducts;
-    }
 }

@@ -10,22 +10,6 @@ public class Discount {
 
     public Discount() {}
 
-    public String getName() {
-        return name;
-    }
-
-    public DiscountType getDiscountType() {
-        return discountType;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public LocalDateTime getLastDateApplied() {
-        return lastDateApplied;
-    }
-
     void setAsAppliedNow() {
         this.lastDateApplied = LocalDateTime.now();
     }

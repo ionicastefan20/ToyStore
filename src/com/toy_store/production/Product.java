@@ -12,26 +12,6 @@ public class Product {
 
     public Product() {}
 
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Manufacturer getManufacturer() {
-        return manufacturer;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
     public Discount getDiscount() {
         return discount;
     }
