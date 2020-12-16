@@ -38,24 +38,34 @@ public class Store {
         instance = this;
     }
 
-    Product[] readCSV(String filename) {
+    public Product[] readCSV(String filename) {
         try (CSVReader reader = new CSVReader(new FileReader(filename))) {
             ArrayList<Product> productArrayList = new ArrayList<>();
-            String[] nextLine = null;
+            String[] columns = reader.readNext();
 
-            while ((nextLine = reader.readNext()) != null) {
-                productArrayList.add(new Product()
-                        .setUniqueId(nextLine[0])
-                        .setName(nextLine[1])
-                        .setManufacturer(new Manufacturer(nextLine[2]))
-                        .setPrice(Helper.convertStringToPriceCurrency(nextLine[3]).getLeft())
-                        .setQuantity(Integer.parseInt(nextLine[4]))
-                );
+            int count = 2;
+            while ((columns = reader.readNext()) != null) {
+                System.out.print((count++)+" "+columns.length + " ");
+                if (columns.length == 1) {
+                    System.out.println();
+                    continue;
+                }
+                Product product = new Product()
+                        .setUniqueId(columns[0])
+                        .setName(columns[1])
+                        .setManufacturer(new Manufacturer(columns[2]))
+                        .setPrice(Helper.convertStringToPriceCurrency(columns[3]).getLeft());
+                String quantityNum = columns[4].equals("") ? "0" : columns[4].split(Helper.SEPARATOR)[0];
+                product.setQuantity(Integer.parseInt(quantityNum));
+                productArrayList.add(product);
+                System.out.println(columns[0]+" "+columns[1]+" "+quantityNum+"a");
             }
 
-            return (Product[]) productArrayList.toArray();
+            Product[] productsArray = new Product[productArrayList.size()];
+            return productArrayList.toArray(productsArray);
         } catch (IOException | CsvValidationException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return new Product[0];
     }
