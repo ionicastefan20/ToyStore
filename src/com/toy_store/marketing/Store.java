@@ -1,24 +1,25 @@
 package com.toy_store.marketing;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.toy_store.financial.*;
 import com.toy_store.production.*;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+
 import com.opencsv.CSVReader;
 
 public class Store {
-//    private final int DEFAULT_ARRAY_SIZE = 8;
     private static final String DEFAULT_STORE_NAME = "POO_Store";
     private static Store instance = null;
     private String name;
     private Currency currency;
-    private List<Product> products;
-    private List<Manufacturer> manufacturers;
-
+    private Product[] products;
+    private int productsNum;
+    private Manufacturer[] manufacturers;
+    private int manufacturersNum;
 
     public static Store getInstance() {
         if (instance == null) {
@@ -30,35 +31,74 @@ public class Store {
     private Store(String name, Currency currency) {
         this.name = name;
         this.currency = currency;
-        this.products = new ArrayList<>();
-        this.manufacturers = new ArrayList<>();
-        this.instance = this;
+        this.products = null;
+        this.productsNum = 0;
+        this.manufacturers = null;
+        this.manufacturersNum = 0;
+        instance = this;
     }
 
-    List<Product> readCSV(String filename) {
-        CSVReader reader = null;
-        try {
-            reader = new CSVReader(new FileReader("amazon_co-ecommerce_sample.csv"));
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-        }
+    Product[] readCSV(String filename) {
+        try (CSVReader reader = new CSVReader(new FileReader(filename))) {
+            ArrayList<Product> productArrayList = new ArrayList<>();
+            String[] nextLine = null;
 
-        return this.products;
+            while ((nextLine = reader.readNext()) != null) {
+                productArrayList.add(new Product()
+                        .setUniqueId(nextLine[0])
+                        .setName(nextLine[1])
+                        .setManufacturer(new Manufacturer(nextLine[2]))
+                        .setPrice(Helper.convertStringToPriceCurrency(nextLine[3]).getLeft())
+                        .setQuantity(Integer.parseInt(nextLine[4]))
+                );
+            }
+
+            return (Product[]) productArrayList.toArray();
+        } catch (IOException | CsvValidationException e) {
+            e.printStackTrace();
+        }
+        return new Product[0];
     }
 
     void addProduct(Product product) throws DuplicateProductException {
+        if (Arrays.asList(products).contains(product)) {
+            throw new DuplicateProductException();
+        }
 
+        if (productsNum == products.length) {
+            Product[] productsClone = products;
+            products = new Product[products.length * 2];
+            System.arraycopy(productsClone, 0, products, 0, productsNum);
+        }
+
+        products[productsNum++] = product;
     }
 
-    void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {}
+    void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {
+        if (Arrays.asList(manufacturers).contains(manufacturer)) {
+            throw new DuplicateManufacturerException();
+        }
 
-    void loadStore(String filename) throws IOException {}
+        if (manufacturersNum == manufacturers.length) {
+            Manufacturer[] manufacturersClone = manufacturers;
+            manufacturers = new Manufacturer[manufacturers.length * 2];
+            System.arraycopy(manufacturersClone, 0, manufacturers, 0, manufacturersNum);
+        }
 
-    void saveStore(String filename) throws IOException {}
+        manufacturers[manufacturersNum++] = manufacturer;
+    }
 
-    void changeCurrency(Currency currency) throws CurrencyNotFoundException {}
+    void loadStore(String filename) throws IOException {
+    }
 
-    void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException {}
+    void saveStore(String filename) throws IOException {
+    }
+
+    void changeCurrency(Currency currency) throws CurrencyNotFoundException {
+    }
+
+    void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException {
+    }
 
     Product[] getProductsByManufacturer(Manufacturer manufacturer) {
         return new Product[1];
