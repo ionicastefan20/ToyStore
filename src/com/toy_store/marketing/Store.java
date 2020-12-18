@@ -18,8 +18,8 @@ public class Store implements Serializable {
     private static Store instance = null;
     private final String name;
     private Currency currency;
-    public Product[] products;
-    public int productsNum;
+    private Product[] products;
+    private int productsNum;
     private Manufacturer[] manufacturers;
     private int manufacturersNum;
 
@@ -38,6 +38,14 @@ public class Store implements Serializable {
         this.manufacturers = null;
         this.manufacturersNum = 0;
         instance = this;
+    }
+
+    public Product[] getProducts() {
+        return products;
+    }
+
+    public int getProductsNum() {
+        return productsNum;
     }
 
     public Product[] readCSV(String filename) {

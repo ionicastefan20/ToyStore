@@ -25,8 +25,8 @@ public class Main {
         System.out.println("\n\n\n");
 
         store = Store.loadStore("test.data");
-        for (int i = 0; i < store.productsNum; i++) {
-            System.out.println(store.products[i]);
+        for (int i = 0; i < store.getProductsNum(); i++) {
+            System.out.println(store.getProducts()[i]);
         }
     }
 }
