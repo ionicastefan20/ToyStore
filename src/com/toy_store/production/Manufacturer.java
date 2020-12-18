@@ -1,7 +1,13 @@
 package com.toy_store.production;
 
-public class Manufacturer {
-    private String name;
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Manufacturer implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 42L;
+
+    private final String name;
     private int countProducts;
 
     public Manufacturer(String name) {
@@ -21,5 +27,12 @@ public class Manufacturer {
         Manufacturer that = (Manufacturer) o;
 
         return name.equals(that.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Manufacturer{ " +
+                "name='" + name + '\'' +
+                " }";
     }
 }

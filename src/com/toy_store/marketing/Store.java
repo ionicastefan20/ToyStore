@@ -4,26 +4,28 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.toy_store.financial.*;
 import com.toy_store.production.*;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.opencsv.CSVReader;
 
-public class Store {
+public class Store implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 42L;
     private static final String DEFAULT_STORE_NAME = "POO_Store";
+
     private static Store instance = null;
-    private String name;
+    private final String name;
     private Currency currency;
-    private Product[] products;
-    private int productsNum;
+    public Product[] products;
+    public int productsNum;
     private Manufacturer[] manufacturers;
     private int manufacturersNum;
 
     public static Store getInstance() {
         if (instance == null) {
-            instance = new Store(DEFAULT_STORE_NAME, new Currency());
+            instance = new Store(DEFAULT_STORE_NAME, Currency.getInstance());
         }
         return instance;
     }
@@ -38,73 +40,116 @@ public class Store {
         instance = this;
     }
 
-    Product[] readCSV(String filename) {
+    public Product[] readCSV(String filename) {
         try (CSVReader reader = new CSVReader(new FileReader(filename))) {
+            reader.readNext();
             ArrayList<Product> productArrayList = new ArrayList<>();
-            String[] nextLine = null;
+            String[] columns;
 
-            while ((nextLine = reader.readNext()) != null) {
-                productArrayList.add(new Product()
-                        .setUniqueId(nextLine[0])
-                        .setName(nextLine[1])
-                        .setManufacturer(new Manufacturer(nextLine[2]))
-                        .setPrice(Helper.convertStringToPriceCurrency(nextLine[3]).getLeft())
-                        .setQuantity(Integer.parseInt(nextLine[4]))
-                );
+            while ((columns = reader.readNext()) != null) {
+                boolean alreadyIn = false;
+                for (Product product : productArrayList) {
+                    if (product.getUniqueId().equals(columns[0])) {
+                        alreadyIn = true;
+                        break;
+                    }
+                }
+                if (alreadyIn) continue;
+
+                Product product = new Product()
+                        .setUniqueId(columns[0])
+                        .setName(columns[1])
+                        .setManufacturer(new Manufacturer(columns[2]))
+                        .setPrice(Helper.convertStringToPriceCurrency(columns[3]).getLeft());
+
+                String quantityNum = columns[4].equals("") ? "0" : columns[4].split(Helper.QUANTITY_SEPARATOR)[0];
+                product.setQuantity(Integer.parseInt(quantityNum));
+                productArrayList.add(product);
             }
 
-            return (Product[]) productArrayList.toArray();
+            return productArrayList.toArray(new Product[0]);
         } catch (IOException | CsvValidationException e) {
             e.printStackTrace();
         }
         return new Product[0];
     }
 
-    void addProduct(Product product) throws DuplicateProductException {
-        if (Arrays.asList(products).contains(product)) {
-            throw new DuplicateProductException();
-        }
+    public void addProduct(Product product) throws DuplicateProductException {
+        if (products == null) {
+            products = new Product[1];
+        } else {
+            if (Arrays.asList(products).contains(product)) {
+                throw new DuplicateProductException();
+            }
 
-        if (productsNum == products.length) {
-            Product[] productsClone = products;
-            products = new Product[products.length * 2];
-            System.arraycopy(productsClone, 0, products, 0, productsNum);
+            if (productsNum == products.length) {
+                Product[] productsClone = products;
+                products = new Product[products.length * 2];
+                System.arraycopy(productsClone, 0, products, 0, productsNum);
+            }
         }
 
         products[productsNum++] = product;
     }
 
-    void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {
-        if (Arrays.asList(manufacturers).contains(manufacturer)) {
-            throw new DuplicateManufacturerException();
-        }
+    public void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {
+        if (manufacturers == null) {
+            manufacturers = new Manufacturer[1];
+        } else {
+            if (Arrays.asList(manufacturers).contains(manufacturer)) {
+                throw new DuplicateManufacturerException();
+            }
 
-        if (manufacturersNum == manufacturers.length) {
-            Manufacturer[] manufacturersClone = manufacturers;
-            manufacturers = new Manufacturer[manufacturers.length * 2];
-            System.arraycopy(manufacturersClone, 0, manufacturers, 0, manufacturersNum);
+            if (manufacturersNum == manufacturers.length) {
+                Manufacturer[] manufacturersClone = manufacturers;
+                manufacturers = new Manufacturer[manufacturers.length * 2];
+                System.arraycopy(manufacturersClone, 0, manufacturers, 0, manufacturersNum);
+            }
         }
 
         manufacturers[manufacturersNum++] = manufacturer;
     }
 
-    void loadStore(String filename) throws IOException {
+    public void saveStore(String filename) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            oos.writeObject(this);
+        }
     }
 
-    void saveStore(String filename) throws IOException {
+    public static Store loadStore(String filename) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream oos = new ObjectInputStream(new FileInputStream(filename))) {
+            instance = (Store) oos.readObject();
+            return instance;
+        }
     }
 
     void changeCurrency(Currency currency) throws CurrencyNotFoundException {
+        if (Currency.getInstance(currency.getSymbol()) == null) throw new CurrencyNotFoundException();
+
+        for (int i = 0; i < productsNum; i++) {
+            products[i].setPrice(products[i].getPrice() / this.currency.getParityToEur() * currency.getParityToEur());
+        }
+        this.currency = currency;
     }
 
     void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException {
     }
 
     Product[] getProductsByManufacturer(Manufacturer manufacturer) {
-        return new Product[1];
+        ArrayList<Product> productArrayList = new ArrayList<>();
+        for (int i = 0; i < productsNum; i++) {
+            if (products[i].getManufacturer().equals(manufacturer)) productArrayList.add(products[i]);
+        }
+
+        return productArrayList.toArray(new Product[0]);
     }
 
-    double calculateTotal(Product[] product) {
-        return 1.0;
+    double calculateTotal(Product[] products) {
+        double sum = 0;
+        for (Product product : products) {
+            sum += product.getPrice() * product.getQuantity();
+        }
+
+        return sum;
     }
 }
