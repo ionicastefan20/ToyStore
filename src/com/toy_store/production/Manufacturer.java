@@ -15,6 +15,10 @@ public class Manufacturer implements Serializable {
         countProducts = 0;
     }
 
+    public String getName() {
+        return name;
+    }
+
     void incCount() {
         countProducts++;
     }
@@ -22,10 +26,11 @@ public class Manufacturer implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+        if (o instanceof String) return name.equals(o);
+        if (getClass() != o.getClass()) return false;
 
         Manufacturer that = (Manufacturer) o;
-
         return name.equals(that.name);
     }
 

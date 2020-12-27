@@ -3,6 +3,7 @@ package com.toy_store.financial;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class Currency implements Serializable {
@@ -12,26 +13,28 @@ public class Currency implements Serializable {
     private final String name;
     private final String symbol;
     private double parityToEur;
-    private static final HashMap<String, Currency> allCurrencies = new HashMap<>();
-
-    static {
-        allCurrencies.put("EUR", new Currency("Euro", "EUR", 1.0));
-        allCurrencies.put("USD", new Currency("US Dollar", "USD", 1.2239));
-        allCurrencies.put("GBP", new Currency("Great British Pound", "GBP", 0.9061));
-    }
-
-    public static Currency getInstance() {
-        return allCurrencies.get("EUR");
-    }
-
-    public static Currency getInstance(String symbol) {
-        return allCurrencies.get(symbol);
-    }
+    private static final Map<String, Currency> currenciesMap = new HashMap<>();
 
     private Currency(String name, String symbol, double parityToEur) {
         this.name = name;
         this.symbol = symbol;
         this.parityToEur = parityToEur;
+    }
+
+    public static Currency getInstance() throws CurrencyNotFoundException {
+        return getInstance("EUR");
+    }
+
+    public static Currency getInstance(String symbol) throws CurrencyNotFoundException {
+        Currency currency = currenciesMap.get(symbol);
+        if (currency == null) throw new CurrencyNotFoundException();
+        return currency;
+    }
+
+    public static Currency createInstance(String symbol) {
+        Currency currency = currenciesMap.get(symbol);
+        if (currency == null) currency = new Currency("Euro", symbol, 1.0);
+        return currency;
     }
 
     public String getSymbol() {

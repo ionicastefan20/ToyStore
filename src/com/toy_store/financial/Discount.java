@@ -1,5 +1,6 @@
 package com.toy_store.financial;
 
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;

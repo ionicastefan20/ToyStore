@@ -16,61 +16,56 @@ public class Product implements Serializable {
     private int quantity;
     private Discount discount;
 
-    public Product() {}
-
-    public Product(String uniqueId) {
-        this.uniqueId = uniqueId;
+    public Product() {
+        // sa te duci in pizda matii
     }
 
     public String getUniqueId() {
         return uniqueId;
     }
 
-    public Product setUniqueId(String uniqueId) {
+    public void setUniqueId(String uniqueId) {
         this.uniqueId = uniqueId;
-        return this;
     }
 
-    public Product setName(String name) {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     public Manufacturer getManufacturer() {
         return manufacturer;
     }
 
-    public Product setManufacturer(Manufacturer manufacturer) {
+    public void setManufacturer(Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
-        manufacturer.incCount();
-        return this;
     }
 
     public double getPrice() {
         return price;
     }
 
-    public Product setPrice(double price) {
+    public void setPrice(double price) {
         this.price = price;
-        return this;
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public Product setQuantity(int quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
-        return this;
     }
 
     public Discount getDiscount() {
         return discount;
     }
 
-    public Product setDiscount(Discount discount) {
+    public void setDiscount(Discount discount) {
         this.discount = discount;
-        return this;
     }
 
     @Override
@@ -81,6 +76,11 @@ public class Product implements Serializable {
         Product product = (Product) o;
 
         return uniqueId.equals(product.uniqueId);
+    }
+
+    @Override
+    public int hashCode() {
+        return uniqueId != null ? uniqueId.hashCode() : 0;
     }
 
     @Override
