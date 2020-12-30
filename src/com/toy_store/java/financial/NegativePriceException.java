@@ -1,4 +1,4 @@
-package com.toy_store.financial;
+package com.toy_store.java.financial;
 
 public class NegativePriceException extends Exception {
 }

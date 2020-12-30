@@ -1,6 +1,6 @@
-package com.toy_store.production;
+package com.toy_store.java.production;
 
-import com.toy_store.financial.Discount;
+import com.toy_store.java.marketing.Discount;
 
 public class ProductBuilder {
     private final Product product;

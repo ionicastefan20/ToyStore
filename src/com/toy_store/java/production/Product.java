@@ -1,6 +1,6 @@
-package com.toy_store.production;
+package com.toy_store.java.production;
 
-import com.toy_store.financial.Discount;
+import com.toy_store.java.marketing.Discount;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,7 +17,7 @@ public class Product implements Serializable {
     private Discount discount;
 
     public Product() {
-        // sa te duci in pizda matii
+        // Do nothing
     }
 
     public String getUniqueId() {

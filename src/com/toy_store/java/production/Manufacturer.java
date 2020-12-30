@@ -1,4 +1,4 @@
-package com.toy_store.production;
+package com.toy_store.java.production;
 
 import java.io.Serial;
 import java.io.Serializable;

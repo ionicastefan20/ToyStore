@@ -1,0 +1,7 @@
+listcurrencies
+getstorecurrency
+addcurrency GBP £ 1.10
+listcurrencies
+loadcsv amazon_co-ecommerce_cleaned.csv
+savecsv store_prices_eur.csv
+exit

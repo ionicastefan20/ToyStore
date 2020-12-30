@@ -1,13 +1,13 @@
-package com.toy_store.marketing;
+package com.toy_store.java.marketing;
 
-import com.toy_store.financial.*;
-import com.toy_store.production.*;
+import com.toy_store.java.financial.*;
+import com.toy_store.java.production.*;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.toy_store.utilities.CSVUtility;
+import com.toy_store.java.utilities.CSVUtility;
 
 public class Store implements Serializable {
     @Serial
@@ -15,23 +15,24 @@ public class Store implements Serializable {
 
     private static Store instance = null;
     private final String name;
-    private Currency currency;
-    private final List<Product> products;
-    private final List<Manufacturer> manufacturers;
+    private Currency currency = Currency.getInstanceByName();
+    private final List<Product> products = new ArrayList<>();
+    private final List<Manufacturer> manufacturers = new ArrayList<>();
 
     public static Store getInstance() {
         if (instance == null) {
-            instance = new Store("POO Store", Currency.createInstance("EUR"));
+            instance = new Store("POO Store");
         }
         return instance;
     }
 
-    private Store(String name, Currency currency) {
+    private Store(String name) {
         this.name = name;
-        this.currency = currency;
-        this.products = new ArrayList<>();
-        this.manufacturers = new ArrayList<>();
         instance = this;
+    }
+
+    public Currency getCurrency() {
+        return currency;
     }
 
     public Product[] readCSV(String filename) {
@@ -40,22 +41,6 @@ public class Store implements Serializable {
 
     public void saveCSV(String filename) {
         CSVUtility.saveCSV(filename, products);
-    }
-
-    public void addProduct(Product product) throws DuplicateProductException {
-        if (products.contains(product)) {
-            throw new DuplicateProductException();
-        } else {
-            products.add(product);
-        }
-    }
-
-    public void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {
-        if (manufacturers.contains(manufacturer)) {
-            throw new DuplicateManufacturerException();
-        } else {
-            manufacturers.add(manufacturer);
-        }
     }
 
     public static Store loadStore(String filename) throws IOException, ClassNotFoundException {
@@ -71,12 +56,36 @@ public class Store implements Serializable {
         }
     }
 
-    public Currency createCurrency() {
-        return Currency.createInstance("EUR");
+    public void addProduct(Product product) throws DuplicateProductException {
+        if (products.contains(product)) {
+            throw new DuplicateProductException();
+        } else {
+            products.add(product);
+            try {
+                addManufacturer(product.getManufacturer());
+            } catch (DuplicateManufacturerException e) {
+                System.out.println(e.getMessage());
+            }
+
+        }
+    }
+
+    public void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {
+        if (manufacturers.contains(manufacturer)) {
+            throw new DuplicateManufacturerException();
+        } else {
+            manufacturers.add(manufacturer);
+        }
+    }
+
+    public Currency createCurrency(String name, String symbol, double parityToEur) {
+        return Currency.createInstance(name, symbol, parityToEur);
     }
 
     void changeCurrency(Currency currency) throws CurrencyNotFoundException {
-        Currency.getInstance(currency.getSymbol());
+        if (Currency.getInstanceByName(currency.getSymbol()) == null) {
+            throw new CurrencyNotFoundException();
+        }
 
         for (Product product : products) {
             product.setPrice(product.getPrice() / this.currency.getParityToEur() * currency.getParityToEur());
@@ -89,11 +98,12 @@ public class Store implements Serializable {
         return new Discount();
     }
 
-    public void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException {}
+    public void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException {
+    }
 
     public Product[] getProductsByManufacturer(Manufacturer manufacturer) {
         List<Product> productArrayList = new ArrayList<>();
-        for (Product product: products) {
+        for (Product product : products) {
             if (product.getManufacturer().equals(manufacturer))
                 productArrayList.add(product);
         }

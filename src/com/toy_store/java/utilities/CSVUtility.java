@@ -1,12 +1,12 @@
-package com.toy_store.utilities;
+package com.toy_store.java.utilities;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
-import com.toy_store.financial.Helper;
-import com.toy_store.production.Manufacturer;
-import com.toy_store.production.Product;
-import com.toy_store.production.ProductBuilder;
+import com.toy_store.java.marketing.Store;
+import com.toy_store.java.production.Manufacturer;
+import com.toy_store.java.production.Product;
+import com.toy_store.java.production.ProductBuilder;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -24,11 +24,14 @@ public class CSVUtility {
         try (CSVReader reader = new CSVReader(new FileReader(filename))) {
             reader.readNext();
             List<Product> productArrayList = new ArrayList<>();
-            List<Manufacturer> manufacturerArrayList = new ArrayList<>();
-            Manufacturer manufacturer = null;
+//            List<Manufacturer> manufacturerArrayList = new ArrayList<>();
+//            Manufacturer manufacturer = null;
             String[] columns;
 
+//            int count = 2;
             while ((columns = reader.readNext()) != null) {
+//                System.out.println(count++);
+
                 boolean alreadyIn = false;
                 for (Product product : productArrayList) {
                     if (product.getUniqueId().equals(columns[0])) {
@@ -38,22 +41,23 @@ public class CSVUtility {
                 }
                 if (alreadyIn) continue;
 
+                /*
                 manufacturer = new Manufacturer(columns[2]);
                 int index = manufacturerArrayList.indexOf(manufacturer);
                 if (index != -1) {
                     manufacturer = manufacturerArrayList.get(index);
-                }
-
+                }*/
                 Product product = new ProductBuilder()
                         .withUniqueId(columns[0])
                         .withName(columns[1])
-                        .withManufacturer(manufacturer)
-                        .withPrice(Helper.convertStringToPriceCurrency(columns[3]).getLeft())
-                        .withQuantity(Integer.parseInt(columns[4].split(" ")[0]))
+                        .withManufacturer(new Manufacturer(columns[2]))
+                        .withPrice(Helper.getPriceUtility(columns[3], Store.getInstance().getCurrency()))
+//                        .withQuantity(Integer.parseInt(columns[4].split(Helper.QUANTITY_SEPARATOR)[0]))
+                        .withQuantity(Integer.parseInt(columns[4].substring(0, columns[4].length()-4)))
                         .build();
 
                 productArrayList.add(product);
-                manufacturerArrayList.add(manufacturer);
+//                manufacturerArrayList.add(manufacturer);
             }
 
             return productArrayList.toArray(new Product[0]);

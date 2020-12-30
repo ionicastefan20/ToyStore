@@ -1,4 +1,4 @@
-package com.toy_store.financial;
+package com.toy_store.java.marketing;
 
 public class DiscountNotFoundException extends Exception {
     public DiscountNotFoundException() {
