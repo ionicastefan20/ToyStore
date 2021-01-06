@@ -6,6 +6,7 @@ import com.toy_store.java.production.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import com.toy_store.java.utilities.CSVUtility;
 
@@ -29,6 +30,19 @@ public class Store implements Serializable {
     private Store(String name) {
         this.name = name;
         instance = this;
+    }
+
+    public Product getProduct(String uniqueId) {
+        return products.stream().filter(product -> product.equalsId(uniqueId)).findFirst().orElse(null);
+
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public List<Manufacturer> getManufacturers() {
+        return manufacturers;
     }
 
     public Currency getCurrency() {
@@ -82,8 +96,8 @@ public class Store implements Serializable {
         return Currency.createInstance(name, symbol, parityToEur);
     }
 
-    void changeCurrency(Currency currency) throws CurrencyNotFoundException {
-        if (Currency.getInstanceByName(currency.getSymbol()) == null) {
+    public void changeCurrency(Currency currency) throws CurrencyNotFoundException {
+        if (!Currency.exists(currency.getName())) {
             throw new CurrencyNotFoundException();
         }
 

@@ -48,8 +48,8 @@ public class Currency implements Serializable {
         return currency;
     }
 
-    public static boolean exists(String symbol) {
-        return currenciesMap.containsKey(symbol);
+    public static boolean exists(String name) {
+        return currenciesMap.containsKey(name);
     }
 
     public String getName() {
@@ -64,7 +64,7 @@ public class Currency implements Serializable {
         return parityToEur;
     }
 
-    void updateParity(double parityToEUR) {
+    public void updateParity(double parityToEUR) {
         this.parityToEur = parityToEUR;
     }
 

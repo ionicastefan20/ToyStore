@@ -1,12 +1,13 @@
 package com.toy_store.java.utilities;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvValidationException;
 import com.toy_store.java.marketing.Store;
 import com.toy_store.java.production.Manufacturer;
 import com.toy_store.java.production.Product;
 import com.toy_store.java.production.ProductBuilder;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -21,47 +22,44 @@ public class CSVUtility {
     }
 
     public static Product[] readCSV(String filename) {
-        try (CSVReader reader = new CSVReader(new FileReader(filename))) {
-            reader.readNext();
+        try (CSVParser csvParser = new CSVParser(new FileReader(filename), CSVFormat.DEFAULT
+                .withIgnoreHeaderCase())) {
             List<Product> productArrayList = new ArrayList<>();
-//            List<Manufacturer> manufacturerArrayList = new ArrayList<>();
-//            Manufacturer manufacturer = null;
-            String[] columns;
+            List<String> uniqueIdArrayList = new ArrayList<>();
+            List<String> manufacturerArrayList = new ArrayList<>();
 
-//            int count = 2;
-            while ((columns = reader.readNext()) != null) {
-//                System.out.println(count++);
-
-                boolean alreadyIn = false;
-                for (Product product : productArrayList) {
-                    if (product.getUniqueId().equals(columns[0])) {
-                        alreadyIn = true;
+            for (CSVRecord csvRecord : csvParser) {
+                // check if csv is broken
+                boolean emptyField = false;
+                for (String field : csvRecord.toMap().values()) {
+                    if ("".equals(field)) {
+                        emptyField = true;
                         break;
                     }
                 }
-                if (alreadyIn) continue;
 
-                /*
-                manufacturer = new Manufacturer(columns[2]);
-                int index = manufacturerArrayList.indexOf(manufacturer);
-                if (index != -1) {
-                    manufacturer = manufacturerArrayList.get(index);
-                }*/
+                // check if product is already in
+                if (uniqueIdArrayList.contains(csvRecord.get(0)) ||
+                        manufacturerArrayList.contains(csvRecord.get(2)) ||
+                        emptyField) {
+                    continue;
+                }
+
                 Product product = new ProductBuilder()
-                        .withUniqueId(columns[0])
-                        .withName(columns[1])
-                        .withManufacturer(new Manufacturer(columns[2]))
-                        .withPrice(Helper.getPriceUtility(columns[3], Store.getInstance().getCurrency()))
-//                        .withQuantity(Integer.parseInt(columns[4].split(Helper.QUANTITY_SEPARATOR)[0]))
-                        .withQuantity(Integer.parseInt(columns[4].substring(0, columns[4].length()-4)))
+                        .withUniqueId(csvRecord.get(0))
+                        .withName(csvRecord.get(1))
+                        .withManufacturer(new Manufacturer(csvRecord.get(2)))
+                        .withPrice(Helper.getPriceUtility(csvRecord.get(3), Store.getInstance().getCurrency()))
+                        .withQuantity(Integer.parseInt(csvRecord.get(4).split(Helper.QUANTITY_SEPARATOR)[0]))
                         .build();
 
                 productArrayList.add(product);
-//                manufacturerArrayList.add(manufacturer);
+                uniqueIdArrayList.add(csvRecord.get(0));
+                manufacturerArrayList.add(csvRecord.get(2));
             }
 
             return productArrayList.toArray(new Product[0]);
-        } catch (IOException | CsvValidationException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -69,19 +67,19 @@ public class CSVUtility {
     }
 
     public static void saveCSV(String filename, List<Product> products) {
-        try (CSVWriter reader = new CSVWriter(new FileWriter(filename))) {
-            String[] columns = {"uniq_id", "product_name", "manufacturer", "price", "number_available_in_stock"};
-            reader.writeNext(columns);
-
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filename), CSVFormat.DEFAULT
+                .withHeader("uniq_id", "product_name", "manufacturer", "price", "number_available_in_stock"))) {
             for (Product product : products) {
-                columns[0] = product.getUniqueId();
-                columns[1] = product.getName();
-                columns[2] = product.getManufacturer().getName();
-                columns[3] = String.valueOf(product.getPrice());
-                columns[4] = String.valueOf(product.getPrice());
-
-                reader.writeNext(columns);
+                csvPrinter.printRecord(
+                        product.getUniqueId(),
+                        product.getName(),
+                        product.getManufacturer().getName(),
+                        Helper.getPriceString(product.getPrice(), Store.getInstance().getCurrency()),
+                        product.getQuantity() + Character.toString(160) + "NEW"
+                );
             }
+
+            csvPrinter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

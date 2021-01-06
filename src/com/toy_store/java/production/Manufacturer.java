@@ -35,6 +35,13 @@ public class Manufacturer implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + countProducts;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Manufacturer{ " +
                 "name='" + name + '\'' +

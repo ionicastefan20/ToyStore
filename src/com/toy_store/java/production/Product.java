@@ -20,6 +20,11 @@ public class Product implements Serializable {
         // Do nothing
     }
 
+    public Product(String uniqueId) {
+        this.uniqueId = uniqueId;
+    }
+
+
     public String getUniqueId() {
         return uniqueId;
     }
@@ -66,6 +71,10 @@ public class Product implements Serializable {
 
     public void setDiscount(Discount discount) {
         this.discount = discount;
+    }
+
+    public boolean equalsId(String uniqueId) {
+        return uniqueId.equals(this.uniqueId);
     }
 
     @Override

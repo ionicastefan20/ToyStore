@@ -32,13 +32,15 @@ public class Main {
                 case "getstorecurrency" -> StoreKeeper.receiveCommand(new GetStoreCurrency());
                 case "addcurrency" -> StoreKeeper.receiveCommand(new AddCurrency(words[1], words[2],
                         Double.parseDouble(words[3])));
+                case "setstorecurrency" -> StoreKeeper.receiveCommand(new SetStoreCurrency(words[1]));
+                case "updateparity" -> StoreKeeper.receiveCommand(new UpdateParity(words[1],
+                        Double.parseDouble(words[2])));
+                case "listproducts" -> StoreKeeper.receiveCommand(new ListProducts());
+                case "showproduct" -> StoreKeeper.receiveCommand(new ShowProduct(words[1]));
+                case "listmanufacturers" -> StoreKeeper.receiveCommand(new ListManufacturer());
+                case "listproductsbymanufacturarer" -> StoreKeeper.receiveCommand(
+                        new ListProductsByManufacturarer(words[1]));
                 // TODO
-                case "setstorecurrency" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "updateparity" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "listproducts" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "listproductsbymanufacturarer" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "showproduct" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "listmanufacturers" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
                 case "listdiscounts" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
                 case "addiscount" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
                 case "applydiscount" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));

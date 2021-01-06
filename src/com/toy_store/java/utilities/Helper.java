@@ -28,7 +28,6 @@ public class Helper {
         }
         valueString = valueString.replace(",", "");
 
-
         return new ImmutablePair<>(valueString, Currency.getInstanceBySymbol(symbol));
     }
 
@@ -45,5 +44,15 @@ public class Helper {
         double valueInEUR = convertPrice(pair.getLeft(), pair.getRight());
 
         return valueInEUR / storeCurrency.getParityToEur();
+    }
+
+    public static String getPriceString(double price, Currency currency) {
+        String result = String.format("%,.2f", price);
+        String symbol = currency.getSymbol();
+
+        if ("£".equals(symbol)) result = symbol + result;
+        else result += symbol;
+
+        return result;
     }
 }
