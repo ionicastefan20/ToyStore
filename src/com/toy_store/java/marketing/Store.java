@@ -6,19 +6,31 @@ import com.toy_store.java.production.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import com.toy_store.java.utilities.CSVUtility;
 
+// TODO redo javadoc
+/**
+ * Represents a Toy-Store.
+ * <p
+ *
+ * The class is designed so that there's never more than one <code>Store</code> instance. Therefore,
+ * there is no public constructor. You obtain a <code>Store</code> instance using the <code>getInstance()</code>
+ * method.
+ *
+ * @author Stefan-Theodor Ionica
+ */
 public class Store implements Serializable {
+
     @Serial
     private static final long serialVersionUID = 42L;
 
     private static Store instance = null;
     private final String name;
-    private Currency currency = Currency.getInstanceByName();
+    private Currency currency = Currency.getInstanceByName("EUR");
     private final List<Product> products = new ArrayList<>();
     private final List<Manufacturer> manufacturers = new ArrayList<>();
+    private final List<Discount> discounts = new ArrayList<>();
 
     public static Store getInstance() {
         if (instance == null) {
@@ -43,6 +55,10 @@ public class Store implements Serializable {
 
     public List<Manufacturer> getManufacturers() {
         return manufacturers;
+    }
+
+    public List<Discount> getDiscounts() {
+        return discounts;
     }
 
     public Currency getCurrency() {
@@ -92,8 +108,8 @@ public class Store implements Serializable {
         }
     }
 
-    public Currency createCurrency(String name, String symbol, double parityToEur) {
-        return Currency.createInstance(name, symbol, parityToEur);
+    public void createCurrency(String name, String symbol, double parityToEur) {
+        Currency.createInstance(name, symbol, parityToEur);
     }
 
     public void changeCurrency(Currency currency) throws CurrencyNotFoundException {
@@ -113,6 +129,7 @@ public class Store implements Serializable {
     }
 
     public void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException {
+        discounts.add(discount);
     }
 
     public Product[] getProductsByManufacturer(Manufacturer manufacturer) {

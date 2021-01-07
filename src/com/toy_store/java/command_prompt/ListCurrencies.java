@@ -6,8 +6,8 @@ public class ListCurrencies implements Command {
 
     @Override
     public void execute() {
-        for (Currency currency : Currency.getAvailableCurrencies()) {
-            System.out.println(currency);
+        for (String currencyString : Currency.getAvailableCurrencies()) {
+            System.out.println(currencyString);
         }
     }
 }
