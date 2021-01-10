@@ -9,9 +9,9 @@ public class UpdateParity implements Command {
     private final String currencyName;
     private final double parity;
 
-    public UpdateParity(String currencyName, double parity) {
+    public UpdateParity(String currencyName, String parity) {
         this.currencyName = currencyName;
-        this.parity = parity;
+        this.parity = Double.parseDouble(parity);
     }
 
     @Override

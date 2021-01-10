@@ -21,8 +21,7 @@ public class Main {
 
                 case "getstorecurrency" -> receiveCommand(new GetStoreCurrency());
 
-                case "addcurrency" -> receiveCommand(new AddCurrency(words[1], words[2],
-                        Double.parseDouble(words[3])));
+                case "addcurrency" -> receiveCommand(new AddCurrency(words[1], words[2], words[3]));
 
                 case "loadcsv" -> receiveCommand(new LoadCSV(words[1]));
 
@@ -30,8 +29,7 @@ public class Main {
 
                 case "setstorecurrency" -> receiveCommand(new SetStoreCurrency(words[1]));
 
-                case "updateparity" -> receiveCommand(new UpdateParity(words[1],
-                        Double.parseDouble(words[2])));
+                case "updateparity" -> receiveCommand(new UpdateParity(words[1], words[2]));
 
                 case "listproducts" -> receiveCommand(new ListProducts());
 
@@ -44,8 +42,7 @@ public class Main {
 
                 case "listdiscounts" -> receiveCommand(new ListDiscounts());
 
-                case "addiscount" -> receiveCommand(new AddDiscount(words[1],
-                        Double.parseDouble(words[2]),
+                case "adddiscount" -> receiveCommand(new AddDiscount(words[1], words[2],
                         Arrays.stream(words).skip(3)
                                 .reduce("", (s1, s2) -> s1 + " " + s2).trim()));
 

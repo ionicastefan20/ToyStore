@@ -9,9 +9,9 @@ public class AddDiscount implements Command {
     private final double value;
     private final String name;
 
-    public AddDiscount(String discountTypeStr, double value, String name) {
+    public AddDiscount(String discountTypeStr, String value, String name) {
         this.discountType = DiscountType.valueOf(discountTypeStr + "_DISCOUNT");
-        this.value = value;
+        this.value = Double.parseDouble(value);
         this.name = name;
     }
 

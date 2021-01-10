@@ -157,7 +157,8 @@ public class Store implements Serializable {
     }
 
     public void createDiscount(String name, DiscountType discountType, double value) {
-        discounts.put(name, new Discount(name, discountType, value));
+        discounts.put(discountType.name().replace("_DISCOUNT", ""),
+                new Discount(name, discountType, value));
     }
 
     public void applyDiscount(String discountName) throws DiscountNotFoundException, NegativePriceException {

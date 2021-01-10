@@ -8,10 +8,10 @@ public class AddCurrency implements Command {
     private final String symbol;
     private final double parityToEur;
 
-    public AddCurrency(String name, String symbol, double parityToEur) {
+    public AddCurrency(String name, String symbol, String parityToEur) {
         this.name = name;
         this.symbol = symbol;
-        this.parityToEur = parityToEur;
+        this.parityToEur = Double.parseDouble(parityToEur);
     }
 
     @Override
