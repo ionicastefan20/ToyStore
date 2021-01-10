@@ -35,11 +35,6 @@ public class ProductBuilder {
         return this;
     }
 
-    public ProductBuilder withDiscount(Discount discount) {
-        product.setDiscount(discount);
-        return this;
-    }
-
     public Product build() {
         return product;
     }

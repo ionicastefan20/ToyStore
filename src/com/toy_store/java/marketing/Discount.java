@@ -9,14 +9,34 @@ public class Discount implements Serializable {
     @Serial
     private static final long serialVersionUID = 42L;
 
-    private String name;
-    private DiscountType discountType;
-    private double value;
+    private final String name;
+    private final DiscountType discountType;
+    private final double value;
     private LocalDateTime lastDateApplied;
 
-    public Discount() {}
+    public Discount(String name, DiscountType discountType, double value) {
+        this.name = name;
+        this.discountType = discountType;
+        this.value = value;
+    }
 
-    void setAsAppliedNow() {
+    public DiscountType getDiscountType() {
+        return discountType;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setAsAppliedNow() {
         this.lastDateApplied = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        String out = discountType + " " + value + " \"" + name + "\"";
+        if (lastDateApplied != null) out += " " + lastDateApplied;
+
+        return out;
     }
 }

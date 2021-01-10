@@ -1,6 +1,7 @@
 package com.toy_store.java.command_prompt;
 
 import com.toy_store.java.marketing.Store;
+import static java.lang.System.*;
 
 public class ShowProduct implements Command {
 
@@ -12,6 +13,6 @@ public class ShowProduct implements Command {
 
     @Override
     public void execute() {
-        Store.getInstance().getProduct(uniqueId);
+        out.print(Store.getInstance().getProduct(uniqueId));
     }
 }

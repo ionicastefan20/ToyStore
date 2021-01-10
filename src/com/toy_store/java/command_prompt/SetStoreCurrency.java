@@ -1,8 +1,9 @@
 package com.toy_store.java.command_prompt;
 
-import com.toy_store.java.financial.Currency;
 import com.toy_store.java.financial.CurrencyNotFoundException;
 import com.toy_store.java.marketing.Store;
+import static java.lang.System.*;
+
 
 public class SetStoreCurrency implements Command {
 
@@ -15,9 +16,9 @@ public class SetStoreCurrency implements Command {
     @Override
     public void execute() {
         try {
-            Store.getInstance().changeCurrency(Currency.getInstanceByName(currencyName));
+            Store.getInstance().changeCurrency(currencyName);
         } catch (CurrencyNotFoundException e) {
-            System.out.println(e.getMessage());
+            out.println(e.getMessage());
         }
     }
 }

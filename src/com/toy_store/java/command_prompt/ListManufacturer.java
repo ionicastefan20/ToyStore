@@ -1,14 +1,12 @@
 package com.toy_store.java.command_prompt;
 
 import com.toy_store.java.marketing.Store;
-import com.toy_store.java.production.Manufacturer;
+import static java.lang.System.*;
 
 public class ListManufacturer implements Command {
 
     @Override
     public void execute() {
-        for (Manufacturer manufacturer : Store.getInstance().getManufacturers()) {
-            System.out.println(manufacturer);
-        }
+        Store.getInstance().getManufacturers().forEach(out::println);
     }
 }

@@ -1,6 +1,10 @@
 package com.toy_store.java.production;
 
+import com.toy_store.java.financial.Currency;
 import com.toy_store.java.marketing.Discount;
+import com.toy_store.java.marketing.DiscountType;
+import com.toy_store.java.marketing.Store;
+import com.toy_store.java.utilities.PriceFormatUtility;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -14,7 +18,6 @@ public class Product implements Serializable {
     private Manufacturer manufacturer;
     private double price;
     private int quantity;
-    private Discount discount;
 
     public Product() {
         // Do nothing
@@ -29,7 +32,7 @@ public class Product implements Serializable {
         return uniqueId;
     }
 
-    public void setUniqueId(String uniqueId) {
+    void setUniqueId(String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -37,7 +40,7 @@ public class Product implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
@@ -45,7 +48,7 @@ public class Product implements Serializable {
         return manufacturer;
     }
 
-    public void setManufacturer(Manufacturer manufacturer) {
+    void setManufacturer(Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
     }
 
@@ -53,24 +56,28 @@ public class Product implements Serializable {
         return price;
     }
 
-    public void setPrice(double price) {
+    void setPrice(double price) {
         this.price = price;
+    }
+
+    public void applyNewCurrency(Currency oldCurrency, Currency newCurrency) {
+        price = price * oldCurrency.getParityToEur() / newCurrency.getParityToEur();
+    }
+
+    public void applyDiscount(Discount discount) {
+        if (discount.getDiscountType() == DiscountType.PERCENTAGE_DISCOUNT) {
+            price *= (100 - discount.getValue()) / 100;
+        } else {
+            price -= discount.getValue();
+        }
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public Discount getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
     }
 
     public boolean equalsId(String uniqueId) {
@@ -94,13 +101,8 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Product{ " +
-                "\n\tuniqueId='" + uniqueId + '\'' +
-                ",\n\tname='" + name + '\'' +
-                ",\n\tmanufacturer=" + manufacturer.toString() +
-                ",\n\tprice=" + price +
-                ",\n\tquantity=" + quantity +
-                ",\n\tdiscount=" + discount +
-                " \n}";
+        return uniqueId + "," + name + "," + manufacturer.toString() + "," +
+                PriceFormatUtility.getPriceAsString(price, Store.getInstance().getCurrency()) +
+                "," + quantity;
     }
 }

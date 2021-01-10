@@ -16,10 +16,7 @@ public class StoreKeeper {
     }
 
     public static void executeCommands() {
-        for (Command command : commands) {
-            if (command instanceof Exit) break;
-            command.execute();
-        }
+        commands.forEach(Command::execute);
         commands.clear();
     }
 }

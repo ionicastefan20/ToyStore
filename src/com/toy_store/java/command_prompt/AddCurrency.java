@@ -1,6 +1,6 @@
 package com.toy_store.java.command_prompt;
 
-import com.toy_store.java.marketing.Store;
+import com.toy_store.java.financial.Currency;
 
 public class AddCurrency implements Command {
 
@@ -16,6 +16,6 @@ public class AddCurrency implements Command {
 
     @Override
     public void execute() {
-        Store.getInstance().createCurrency(name, symbol, parityToEur);
+        Currency.createInstance(name, symbol, parityToEur);
     }
 }

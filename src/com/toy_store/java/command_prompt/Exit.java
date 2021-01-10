@@ -4,6 +4,6 @@ public class Exit implements Command {
 
     @Override
     public void execute() {
-        // Nothing to do
+        System.exit(0);
     }
 }

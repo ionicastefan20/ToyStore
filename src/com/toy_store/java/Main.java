@@ -4,7 +4,10 @@ import com.toy_store.java.command_prompt.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import static java.lang.System.*;
 
 public class Main {
 
@@ -26,12 +29,12 @@ public class Main {
             String[] words = scanner.nextLine().split(" ");
 
             switch (words[0]) {
-                case "loadcsv" -> StoreKeeper.receiveCommand(new LoadCSV(words[1]));
-                case "savecsv" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
                 case "listcurrencies" -> StoreKeeper.receiveCommand(new ListCurrencies());
                 case "getstorecurrency" -> StoreKeeper.receiveCommand(new GetStoreCurrency());
                 case "addcurrency" -> StoreKeeper.receiveCommand(new AddCurrency(words[1], words[2],
                         Double.parseDouble(words[3])));
+                case "loadcsv" -> StoreKeeper.receiveCommand(new LoadCSV(words[1]));
+                case "savecsv" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
                 case "setstorecurrency" -> StoreKeeper.receiveCommand(new SetStoreCurrency(words[1]));
                 case "updateparity" -> StoreKeeper.receiveCommand(new UpdateParity(words[1],
                         Double.parseDouble(words[2])));
@@ -39,16 +42,19 @@ public class Main {
                 case "showproduct" -> StoreKeeper.receiveCommand(new ShowProduct(words[1]));
                 case "listmanufacturers" -> StoreKeeper.receiveCommand(new ListManufacturer());
                 case "listproductsbymanufacturarer" -> StoreKeeper.receiveCommand(
-                        new ListProductsByManufacturarer(words[1]));
-                // TODO
-                case "listdiscounts" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "addiscount" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "applydiscount" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
-                case "calculatetotal" -> StoreKeeper.receiveCommand(new SaveCSV(words[1]));
+                        new ListProductsByManufacturer(words[1]));
+                case "listdiscounts" -> StoreKeeper.receiveCommand(new ListDiscounts());
+                case "addiscount" -> StoreKeeper.receiveCommand(new AddDiscount(words[1],
+                        Double.parseDouble(words[2]), words[3]));
+                case "applydiscount" -> StoreKeeper.receiveCommand(new ApplyDiscount(words[1]));
+                case "calculatetotal" -> StoreKeeper.receiveCommand(new CalculateTotal(
+                        Arrays.stream(words).skip(1).collect(Collectors.toSet())
+                ));
                 case "exit", "quit" -> StoreKeeper.receiveCommand(new Exit());
+                // TODO
                 case "savestore" -> StoreKeeper.receiveCommand(new Exit());
                 case "loadstore" -> StoreKeeper.receiveCommand(new Exit());
-                default -> System.out.println("Invalid command");
+                default -> out.println("Invalid command");
             }
         }
 

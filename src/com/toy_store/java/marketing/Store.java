@@ -1,19 +1,24 @@
 package com.toy_store.java.marketing;
 
-import com.toy_store.java.financial.*;
+import com.toy_store.java.financial.Currency;
+import com.toy_store.java.financial.CurrencyNotFoundException;
+import com.toy_store.java.financial.NegativePriceException;
 import com.toy_store.java.production.*;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.toy_store.java.utilities.CSVLine;
 import com.toy_store.java.utilities.CSVUtility;
 
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.lang.System.*;
+
 // TODO redo javadoc
+
 /**
  * Represents a Toy-Store.
  * <p
- *
+ * <p>
  * The class is designed so that there's never more than one <code>Store</code> instance. Therefore,
  * there is no public constructor. You obtain a <code>Store</code> instance using the <code>getInstance()</code>
  * method.
@@ -28,9 +33,9 @@ public class Store implements Serializable {
     private static Store instance = null;
     private final String name;
     private Currency currency = Currency.getInstanceByName("EUR");
-    private final List<Product> products = new ArrayList<>();
-    private final List<Manufacturer> manufacturers = new ArrayList<>();
-    private final List<Discount> discounts = new ArrayList<>();
+    private final Map<String, Product> products = new HashMap<>();
+    private final Map<String, Manufacturer> manufacturers = new HashMap<>();
+    private final Map<String, Discount> discounts = new HashMap<>();
 
     public static Store getInstance() {
         if (instance == null) {
@@ -44,33 +49,44 @@ public class Store implements Serializable {
         instance = this;
     }
 
-    public Product getProduct(String uniqueId) {
-        return products.stream().filter(product -> product.equalsId(uniqueId)).findFirst().orElse(null);
+    public void loadCSV(String filename) {
+        List<CSVLine> csvData = CSVUtility.readCSV(filename);
 
-    }
+        for (CSVLine line : csvData) {
+            Manufacturer manufacturer = manufacturers.get(line.getManufacturer());
+            if (manufacturer == null) manufacturer = new Manufacturer(line.getManufacturer());
+            try {
+                addManufacturer(manufacturer);
+            } catch (DuplicateManufacturerException e) {
+                out.println(e.getMessage());
+            }
 
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public List<Manufacturer> getManufacturers() {
-        return manufacturers;
-    }
-
-    public List<Discount> getDiscounts() {
-        return discounts;
-    }
-
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    public Product[] readCSV(String filename) {
-        return CSVUtility.readCSV(filename);
+            Product product = products.get(line.getUniqueId());
+            if (product == null) product = new ProductBuilder()
+                    .withUniqueId(line.getUniqueId())
+                    .withName(line.getName())
+                    .withManufacturer(manufacturer)
+                    .withPrice(line.getPrice())
+                    .withQuantity(line.getQuantity())
+                    .build();
+            try {
+                addProduct(product);
+            } catch (DuplicateProductException e) {
+                out.println(e.getMessage());
+            }
+        }
     }
 
     public void saveCSV(String filename) {
-        CSVUtility.saveCSV(filename, products);
+        List<CSVLine> csvLines = products.values().stream().map(p -> new CSVLine(
+                p.getUniqueId(),
+                p.getName(),
+                p.getManufacturer().getName(),
+                p.getPrice(),
+                p.getQuantity()
+        )).collect(Collectors.toList());
+
+        CSVUtility.saveCSV(filename, csvLines);
     }
 
     public static Store loadStore(String filename) throws IOException, ClassNotFoundException {
@@ -87,67 +103,82 @@ public class Store implements Serializable {
     }
 
     public void addProduct(Product product) throws DuplicateProductException {
-        if (products.contains(product)) {
+        if (!products.containsKey(product.getUniqueId()))
             throw new DuplicateProductException();
-        } else {
-            products.add(product);
-            try {
-                addManufacturer(product.getManufacturer());
-            } catch (DuplicateManufacturerException e) {
-                System.out.println(e.getMessage());
-            }
 
-        }
+        products.put(product.getUniqueId(), product);
+
+    }
+
+    public String getProduct(String uniqueId) {
+        return products.get(uniqueId).toString();
+    }
+
+    public List<String> getProducts() {
+        return products.values().stream().map(Product::toString).collect(Collectors.toList());
+    }
+
+    public List<String> getProductsByManufacturer(String manufacturerName) {
+        return products.values().stream()
+                .filter(product -> manufacturerName.equals(product.getManufacturer().getName()))
+                .map(Product::toString)
+                .collect(Collectors.toList());
     }
 
     public void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {
-        if (manufacturers.contains(manufacturer)) {
+        if (!manufacturers.containsKey(manufacturer.getName()))
             throw new DuplicateManufacturerException();
-        } else {
-            manufacturers.add(manufacturer);
-        }
+
+        manufacturers.put(manufacturer.getName(), manufacturer);
     }
 
-    public void createCurrency(String name, String symbol, double parityToEur) {
-        Currency.createInstance(name, symbol, parityToEur);
+    public List<String> getManufacturers() {
+        return manufacturers.values().stream().map(Manufacturer::toString).sorted().collect(Collectors.toList());
     }
 
-    public void changeCurrency(Currency currency) throws CurrencyNotFoundException {
-        if (!Currency.exists(currency.getName())) {
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void changeCurrency(String currencyName) throws CurrencyNotFoundException {
+        Currency newCurrency = Currency.getInstanceByName(currencyName);
+        if (newCurrency == null)
             throw new CurrencyNotFoundException();
-        }
 
-        for (Product product : products) {
-            product.setPrice(product.getPrice() / this.currency.getParityToEur() * currency.getParityToEur());
-        }
+        products.values().forEach(product -> product.applyNewCurrency(currency, newCurrency));
 
-        this.currency = currency;
+        currency = newCurrency;
     }
 
-    public Discount createDiscount() {
-        return new Discount();
+    public void createDiscount(String name, DiscountType discountType, double value) {
+        discounts.put(name, new Discount(name, discountType, value));
     }
 
-    public void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException {
-        discounts.add(discount);
-    }
+    public void applyDiscount(String discountName) throws DiscountNotFoundException, NegativePriceException {
+        if (!discounts.containsKey(discountName))
+            throw new DiscountNotFoundException();
+        Discount discount = discounts.get(discountName);
 
-    public Product[] getProductsByManufacturer(Manufacturer manufacturer) {
-        List<Product> productArrayList = new ArrayList<>();
-        for (Product product : products) {
-            if (product.getManufacturer().equals(manufacturer))
-                productArrayList.add(product);
+        if (discount.getDiscountType() == DiscountType.FIXED_DISCOUNT) {
+            double minPrice = Collections.min(products.values().stream().map(Product::getPrice)
+                    .collect(Collectors.toList()));
+            if (minPrice < discount.getValue())
+                throw new NegativePriceException();
         }
 
-        return productArrayList.toArray(new Product[0]);
+        products.values().forEach(product -> product.applyDiscount(discount));
     }
 
-    double calculateTotal(Product[] products) {
-        double sum = 0;
-        for (Product product : products) {
-            sum += product.getPrice() * product.getQuantity();
-        }
+    public List<String> getDiscounts() {
+        return discounts.values().stream().map(Discount::toString).collect(Collectors.toList());
+    }
 
-        return sum;
+    public double calculateTotal(Set<String> idList) {
+        return products.entrySet().stream()
+                .filter(e -> idList.contains(e.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                .values().stream()
+                .mapToDouble(p -> p.getPrice() * p.getQuantity())
+                .reduce(0, Double::sum);
     }
 }

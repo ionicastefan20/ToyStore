@@ -4,14 +4,9 @@ import com.toy_store.java.financial.Currency;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
+public class PriceFormatUtility {
 
-public class Helper {
-    public static final String QUANTITY_SEPARATOR = Character.toString(160) + "| ";
-    private static final Map<String, String> symbolsMap = new HashMap<>();
-
-    private Helper() {
+    private PriceFormatUtility() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -39,14 +34,14 @@ public class Helper {
         return convertPrice(price) * currency.getParityToEur();
     }
 
-    public static double getPriceUtility(String priceWithCurrency, Currency storeCurrency) {
+    public static double getPriceFromString(String priceWithCurrency, Currency storeCurrency) {
         Pair<String, Currency> pair = convertStringToPriceCurrency(priceWithCurrency);
         double valueInEUR = convertPrice(pair.getLeft(), pair.getRight());
 
         return valueInEUR / storeCurrency.getParityToEur();
     }
 
-    public static String getPriceString(double price, Currency currency) {
+    public static String getPriceAsString(double price, Currency currency) {
         String result = String.format("%,.2f", price);
         String symbol = currency.getSymbol();
 

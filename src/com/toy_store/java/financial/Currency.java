@@ -3,7 +3,9 @@ package com.toy_store.java.financial;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a currency. Currencies are identified by their
@@ -85,27 +87,6 @@ public class Currency implements Serializable {
         this.parityToEur = parityToEur;
     }
 
-    public static void createInstance(String name, String symbol, double parityToEur) {
-        if (!currenciesMap.containsKey(name)) return;
-
-        Currency currency = new Currency(name, symbol, parityToEur);
-
-        currenciesMap.put(name, currency);
-        symbolMap.put(symbol, name);
-    }
-
-    public static Currency getInstanceByName(String name) {
-        return currenciesMap.get(name);
-    }
-
-    public static Currency getInstanceBySymbol(String symbol) {
-        return getInstanceByName(symbolMap.get(symbol));
-    }
-
-    public static boolean exists(String name) {
-        return currenciesMap.containsKey(name);
-    }
-
     public String getName() {
         return name;
     }
@@ -118,8 +99,29 @@ public class Currency implements Serializable {
         return parityToEur;
     }
 
-    public static String[] getAvailableCurrencies() {
-        return (String[]) currenciesMap.values().stream().map(Currency::toString).toArray();
+    public static void createInstance(String name, String symbol, double parityToEur) {
+        if (!currenciesMap.containsKey(name)) return;
+
+        Currency currency = new Currency(name, symbol, parityToEur);
+
+        currenciesMap.put(name, currency);
+        symbolMap.put(symbol, name);
+    }
+
+    public static boolean exists(String name) {
+        return currenciesMap.containsKey(name);
+    }
+
+    public static Currency getInstanceByName(String name) {
+        return currenciesMap.get(name);
+    }
+
+    public static Currency getInstanceBySymbol(String symbol) {
+        return getInstanceByName(symbolMap.get(symbol));
+    }
+
+    public static List<String> getAvailableCurrencies() {
+        return currenciesMap.values().stream().map(Currency::toString).collect(Collectors.toList());
     }
 
     public void updateParity(double parityToEUR) {
