@@ -34,7 +34,7 @@ public class Discount implements Serializable {
 
     @Override
     public String toString() {
-        String out = discountType + " " + value + " \"" + name + "\"";
+        String out = discountType + " " + value + " " + name;
         if (lastDateApplied != null) out += " " + lastDateApplied;
 
         return out;

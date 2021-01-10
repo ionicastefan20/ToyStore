@@ -8,7 +8,7 @@ public class StoreKeeper {
     private static final List<Command> commands = new ArrayList<>();
 
     private StoreKeeper() {
-        throw new IllegalStateException("Class StoreKeeper can't be instantiated");
+        throw new IllegalStateException("Utility class cannot be instantiated.");
     }
 
     public static void receiveCommand(Command command) {

@@ -1,6 +1,8 @@
 package com.toy_store.java.command_prompt;
 
 import com.toy_store.java.financial.Currency;
+import com.toy_store.java.financial.CurrencyNotFoundException;
+import static java.lang.System.*;
 
 public class UpdateParity implements Command {
 
@@ -14,6 +16,11 @@ public class UpdateParity implements Command {
 
     @Override
     public void execute() {
-        Currency.getInstanceByName(currencyName).updateParity(parity);
+        try {
+            Currency.getInstanceByName(currencyName).updateParity(parity);
+        } catch (CurrencyNotFoundException e) {
+            e.printStackTrace();
+            out.println(e.getMessage());
+        }
     }
 }

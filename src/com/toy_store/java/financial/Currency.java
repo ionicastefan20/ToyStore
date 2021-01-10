@@ -100,7 +100,7 @@ public class Currency implements Serializable {
     }
 
     public static void createInstance(String name, String symbol, double parityToEur) {
-        if (!currenciesMap.containsKey(name)) return;
+        if (currenciesMap.containsKey(name)) return;
 
         Currency currency = new Currency(name, symbol, parityToEur);
 
@@ -112,11 +112,15 @@ public class Currency implements Serializable {
         return currenciesMap.containsKey(name);
     }
 
-    public static Currency getInstanceByName(String name) {
+    public static Currency getInstanceByName(String name) throws CurrencyNotFoundException {
+        if (!currenciesMap.containsKey(name)) throw new CurrencyNotFoundException(name);
+
         return currenciesMap.get(name);
     }
 
-    public static Currency getInstanceBySymbol(String symbol) {
+    public static Currency getInstanceBySymbol(String symbol) throws CurrencyNotFoundException {
+        if (!symbolMap.containsKey(symbol)) throw new CurrencyNotFoundException(symbol);
+
         return getInstanceByName(symbolMap.get(symbol));
     }
 

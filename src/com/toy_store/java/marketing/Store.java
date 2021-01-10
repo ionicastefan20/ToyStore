@@ -32,8 +32,8 @@ public class Store implements Serializable {
 
     private static Store instance = null;
     private final String name;
-    private Currency currency = Currency.getInstanceByName("EUR");
-    private final Map<String, Product> products = new HashMap<>();
+    private Currency currency;
+    private final Map<String, Product> products = new LinkedHashMap<>();
     private final Map<String, Manufacturer> manufacturers = new HashMap<>();
     private final Map<String, Discount> discounts = new HashMap<>();
 
@@ -46,6 +46,12 @@ public class Store implements Serializable {
 
     private Store(String name) {
         this.name = name;
+        try {
+            this.currency = Currency.getInstanceByName("EUR");
+        } catch (CurrencyNotFoundException e) {
+            // Do nothing
+        }
+
         instance = this;
     }
 
@@ -58,7 +64,7 @@ public class Store implements Serializable {
             try {
                 addManufacturer(manufacturer);
             } catch (DuplicateManufacturerException e) {
-                out.println(e.getMessage());
+//                out.println(e.getMessage());
             }
 
             Product product = products.get(line.getUniqueId());
@@ -72,7 +78,7 @@ public class Store implements Serializable {
             try {
                 addProduct(product);
             } catch (DuplicateProductException e) {
-                out.println(e.getMessage());
+//                out.println(e.getMessage());
             }
         }
     }
@@ -103,7 +109,7 @@ public class Store implements Serializable {
     }
 
     public void addProduct(Product product) throws DuplicateProductException {
-        if (!products.containsKey(product.getUniqueId()))
+        if (products.containsKey(product.getUniqueId()))
             throw new DuplicateProductException();
 
         products.put(product.getUniqueId(), product);
@@ -126,7 +132,7 @@ public class Store implements Serializable {
     }
 
     public void addManufacturer(Manufacturer manufacturer) throws DuplicateManufacturerException {
-        if (!manufacturers.containsKey(manufacturer.getName()))
+        if (manufacturers.containsKey(manufacturer.getName()))
             throw new DuplicateManufacturerException();
 
         manufacturers.put(manufacturer.getName(), manufacturer);
@@ -143,7 +149,7 @@ public class Store implements Serializable {
     public void changeCurrency(String currencyName) throws CurrencyNotFoundException {
         Currency newCurrency = Currency.getInstanceByName(currencyName);
         if (newCurrency == null)
-            throw new CurrencyNotFoundException();
+            throw new CurrencyNotFoundException(currencyName);
 
         products.values().forEach(product -> product.applyNewCurrency(currency, newCurrency));
 

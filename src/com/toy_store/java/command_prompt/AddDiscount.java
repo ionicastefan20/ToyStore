@@ -10,7 +10,7 @@ public class AddDiscount implements Command {
     private final String name;
 
     public AddDiscount(String discountTypeStr, double value, String name) {
-        this.discountType = DiscountType.valueOf(discountTypeStr);
+        this.discountType = DiscountType.valueOf(discountTypeStr + "_DISCOUNT");
         this.value = value;
         this.name = name;
     }

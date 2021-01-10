@@ -1,16 +1,18 @@
 package com.toy_store.java.utilities;
 
 import com.toy_store.java.financial.Currency;
+import com.toy_store.java.financial.CurrencyNotFoundException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import static java.lang.System.*;
 
 public class PriceFormatUtility {
 
     private PriceFormatUtility() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException("Utility class cannot be instantiated.");
     }
 
-    private static Pair<String, Currency> convertStringToPriceCurrency(String priceWithCurrency) {
+    private static Pair<String, Currency> convertStringToPriceCurrency(String priceWithCurrency) throws CurrencyNotFoundException {
         String symbol;
         String valueString;
 
@@ -35,7 +37,14 @@ public class PriceFormatUtility {
     }
 
     public static double getPriceFromString(String priceWithCurrency, Currency storeCurrency) {
-        Pair<String, Currency> pair = convertStringToPriceCurrency(priceWithCurrency);
+        Pair<String, Currency> pair = null;
+        try {
+            pair = convertStringToPriceCurrency(priceWithCurrency);
+        }  catch (CurrencyNotFoundException e) {
+            out.println(e.getMessage());
+            exit(1);
+        }
+
         double valueInEUR = convertPrice(pair.getLeft(), pair.getRight());
 
         return valueInEUR / storeCurrency.getParityToEur();

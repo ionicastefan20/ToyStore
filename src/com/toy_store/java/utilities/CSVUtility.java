@@ -16,22 +16,28 @@ import java.util.List;
 public class CSVUtility {
 
     private CSVUtility() {
-        throw new IllegalStateException("Utility class");
+        throw new IllegalStateException("Utility class cannot be instantiated.");
     }
 
     public static List<CSVLine> readCSV(String filename) {
         try (CSVParser csvParser = new CSVParser(new FileReader(filename), CSVFormat.DEFAULT
-                .withIgnoreHeaderCase())) {
+                .withHeader())) {
 
             List<CSVLine> csvData = new ArrayList<>();
 
             for (CSVRecord csvRecord : csvParser) {
+                if ("".equals(csvRecord.get(0)) ||
+                        "".equals(csvRecord.get(1)) ||
+                        "".equals(csvRecord.get(2)) ||
+                        "".equals(csvRecord.get(3))) continue;
+                String priceString = csvRecord.get(3).split(" ")[0];
+                String quantityString = "".equals(csvRecord.get(4)) ? "0" : csvRecord.get(4).split("\u00A0")[0];
                 CSVLine line = new CSVLine(
                         csvRecord.get(0),
                         csvRecord.get(1),
                         csvRecord.get(2),
-                        PriceFormatUtility.getPriceFromString(csvRecord.get(3), Store.getInstance().getCurrency()),
-                        Integer.parseInt(csvRecord.get(4).split("\u00A0")[0])
+                        PriceFormatUtility.getPriceFromString(priceString, Store.getInstance().getCurrency()),
+                        Integer.parseInt(quantityString)
                 );
 
                 csvData.add(line);
