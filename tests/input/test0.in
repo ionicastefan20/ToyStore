@@ -1,7 +1,0 @@
-listcurrencies
-addcurrency GBP £ 1.10
-listcurrencies
-setstorecurrency GBP
-loadcsv my_csv.csv
-savecsv tests/output/test0.csv
-quit

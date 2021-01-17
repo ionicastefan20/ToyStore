@@ -1,18 +1,36 @@
 package com.toy_store.java.command_prompt;
 
 import com.toy_store.java.marketing.Store;
+import com.toy_store.java.production.ProductNotFoundException;
 import static java.lang.System.*;
 
+/**
+ * Command class that shows the details of the product given as parameter.
+ */
 public class ShowProduct implements Command {
 
-    private final String uniqueId;
+    /**
+     * The ID of the product.
+     */
+    private final String id;
 
-    public ShowProduct(String uniqueId) {
-        this.uniqueId = uniqueId;
+    /**
+     * Constructor of the <code>ShowProduct</code> class.
+     * @param id the ID of the product.
+     */
+    public ShowProduct(String id) {
+        this.id = id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute() {
-        out.print(Store.getInstance().getProduct(uniqueId));
+        try {
+            out.println(Store.getInstance().getProduct(id));
+        } catch (ProductNotFoundException e) {
+            out.println(e.getMessage());
+        }
     }
 }

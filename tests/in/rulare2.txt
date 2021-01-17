@@ -1,0 +1,15 @@
+addcurrency GBP £ 1.10
+setstorecurrency GBP
+loadcsv tests/res/amazon_co-ecommerce_cleaned.csv
+listproducts
+adddiscount PERCENTAGE 30 "30% Black Friday"
+applydiscount PERCENTAGE 30
+listmanufacturers
+listproductsbymanufacturer Hornby
+addcurrency USD $ 0.82
+setstorecurrency USD
+adddiscount FIXED 1 "-1$ per item at Walmart Sunday Sale"
+applydiscount FIXED 1
+listdiscounts
+savecsv tests/csv_out/rulare2.csv
+quit

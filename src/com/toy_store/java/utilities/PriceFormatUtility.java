@@ -6,13 +6,27 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import static java.lang.System.*;
 
+/**
+ * Utility class that processes Strings containing prices.
+ */
 public class PriceFormatUtility {
 
+    /**
+     * The class cannot be instantiated. It's an utility class.
+     */
     private PriceFormatUtility() {
         throw new IllegalStateException("Utility class cannot be instantiated.");
     }
 
-    private static Pair<String, Currency> convertStringToPriceCurrency(String priceWithCurrency) throws CurrencyNotFoundException {
+    /**
+     * Converts a string containing a price into a pair with the value (double) and the Currency
+     * associated with it.
+     * @param priceWithCurrency the string to be processed
+     * @return the pair explained above
+     * @throws CurrencyNotFoundException if the currency does not exist
+     */
+    private static Pair<Double, Currency> convertStringToPriceCurrency(String priceWithCurrency)
+            throws CurrencyNotFoundException {
         String symbol;
         String valueString;
 
@@ -25,38 +39,35 @@ public class PriceFormatUtility {
         }
         valueString = valueString.replace(",", "");
 
-        return new ImmutablePair<>(valueString, Currency.getInstanceBySymbol(symbol));
+        return new ImmutablePair<>(Double.parseDouble(valueString), Currency.getInstanceBySymbol(symbol));
     }
 
-    private static double convertPrice(String price) {
-        return Double.parseDouble(price);
-    }
-
-    private static double convertPrice(String price, Currency currency) {
-        return convertPrice(price) * currency.getParityToEur();
-    }
-
+    /**
+     * Wrapper for the <code>convertStringToPriceCurrency(String)</code> function. It converts the
+     * price to the currency of the store.
+     * @param priceWithCurrency the string containing the price
+     * @param storeCurrency the currency of the store
+     * @return the price as double
+     */
     public static double getPriceFromString(String priceWithCurrency, Currency storeCurrency) {
-        Pair<String, Currency> pair = null;
+        Pair<Double, Currency> pair = null;
         try {
             pair = convertStringToPriceCurrency(priceWithCurrency);
         }  catch (CurrencyNotFoundException e) {
-            out.println(e.getMessage());
+            out.println(e.getMessage() + " Exiting...");
             exit(1);
         }
 
-        double valueInEUR = convertPrice(pair.getLeft(), pair.getRight());
-
-        return valueInEUR / storeCurrency.getParityToEur();
+        return Currency.convertPrice(pair.getLeft(), pair.getRight(), storeCurrency);
     }
 
+    /**
+     * Converts a price from the store to its String form to be printed or added to the CSV file.
+     * @param price the price to be converted
+     * @param currency the currency of the price
+     * @return the resulting String
+     */
     public static String getPriceAsString(double price, Currency currency) {
-        String result = String.format("%,.2f", price);
-        String symbol = currency.getSymbol();
-
-        if ("£".equals(symbol)) result = symbol + result;
-        else result += symbol;
-
-        return result;
+        return currency.getSymbol() + String.format("%,.3f", price);
     }
 }

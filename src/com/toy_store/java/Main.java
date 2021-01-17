@@ -1,17 +1,34 @@
 package com.toy_store.java;
 
 import com.toy_store.java.command_prompt.*;
-import static com.toy_store.java.command_prompt.StoreKeeper.receiveCommand;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import com.toy_store.java.marketing.Store;
+
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import static com.toy_store.java.command_prompt.StoreKeeper.receiveCommand;
 import static java.lang.System.*;
 
+/**
+ * The entry point of the program.
+ */
 public class Main {
 
+    /**
+     * Main method.
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
+//        PrintStream o = null;
+//        try {
+//            o = new PrintStream("tests/out/rulare3.out");
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        System.setOut(o);
+
+        Store.getInstance().displayWelcome();
+
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String[] words = scanner.nextLine().split(" ");
@@ -37,8 +54,10 @@ public class Main {
 
                 case "listmanufacturers" -> receiveCommand(new ListManufacturer());
 
-                case "listproductsbymanufacturarer" -> receiveCommand(
-                        new ListProductsByManufacturer(words[1]));
+                case "listproductsbymanufacturer" -> receiveCommand(new ListProductsByManufacturer(
+                                Arrays.stream(words).skip(1)
+                                        .reduce("", (s1, s2) -> s1 + " " + s2).trim())
+                        );
 
                 case "listdiscounts" -> receiveCommand(new ListDiscounts());
 
@@ -46,18 +65,17 @@ public class Main {
                         Arrays.stream(words).skip(3)
                                 .reduce("", (s1, s2) -> s1 + " " + s2).trim()));
 
-                case "applydiscount" -> receiveCommand(new ApplyDiscount(words[1]));
+                case "applydiscount" -> receiveCommand(new ApplyDiscount(words[1], words[2]));
 
                 case "calculatetotal" -> receiveCommand(new CalculateTotal(
-                        Arrays.stream(words).skip(1).collect(Collectors.toSet())
+                        Arrays.stream(words).skip(1).collect(Collectors.toList())
                 ));
 
                 case "exit", "quit" -> receiveCommand(new Exit());
-                // TODO
 
-                case "savestore" -> receiveCommand(new Exit());
+                case "loadstore" -> receiveCommand(new LoadStore(words[1]));
 
-                case "loadstore" -> receiveCommand(new Exit());
+                case "savestore" -> receiveCommand(new SaveStore(words[1]));
 
                 default -> out.println("Invalid command");
             }
