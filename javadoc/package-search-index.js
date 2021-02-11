@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.toy_store.java"},{"l":"com.toy_store.java.command_prompt"},{"l":"com.toy_store.java.financial"},{"l":"com.toy_store.java.marketing"},{"l":"com.toy_store.java.production"},{"l":"com.toy_store.java.utilities"}];updateSearchResults();
