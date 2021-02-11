@@ -1,0 +1,34 @@
+321CB IONICA STEFAN-THEODOR
+
+This application can be used to manage a store. The application is command based and it implements
+all the commands given in the specification. More details about the implementation can be read in the
+provided javadoc.
+
+Bonuses:
+For reading commands, I used an additional design pattern: Command pattern, but instead of
+saving all commands and executing all at once, the commands are executed right away, simulating
+how a real store application shall work (if the user wants to execute all commands at once, in the
+StoreKeeper class, receiveCommand method, the line "commands.add(command);" must be uncommented and
+the line "command.execute();" must be commented out).
+Also, for reading the CSV files and for an implementation of Pairs, I used Apache Commons libraries.
+I have also implemented the methods: savestore and loadstore.
+
+The function headers that I changed are:
+
+double calculateTotal(Product[] product) -> double calculateTotal(List<String> idList) throws ProductNotFoundException:
+    - it also check if the quantity of each product (find by its id) is greater or equal to the amount requested
+
+Product[] getProductsByManufacturer(Manufacturer manufacturer) ->
+        List<String> getProductsByManufacturer(String manufacturerName) throws ManufacturerNotFoundException:
+    - so that anyone who uses the app as an api, can't access the products as objects, potentially
+      doing more harm
+
+void applyDiscount(Discount discount) throws DiscountNotFoundException, NegativePriceException:
+    - now receives as parameters: String type, double value instead of a Discount object
+
+Currency createCurrency(String name, String symbol, double parityToEur):
+    - is now located in Currency.java
+
+Running the app:
+    make rulare[X] > output_filename, where X = the number of the test (the input tests are located in "tests/in")
+    eg. make rulare1 > output.out

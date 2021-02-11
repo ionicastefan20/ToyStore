@@ -293,6 +293,9 @@ public class Store implements Serializable {
 
     /**
      * Calculates the total price of the products from the list given as parameter.
+     * If any of the products doesn't exist, an exception is thrown.
+     * If the quantity of any of the products is lowers than the amount requested, an exception is
+     * thrown and the quantity present in the store is used.
      * @param idList the list of IDs
      * @return the total price of the products
      * @throws ProductNotFoundException if any of the products does not exist

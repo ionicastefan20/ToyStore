@@ -19,13 +19,6 @@ public class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-//        PrintStream o = null;
-//        try {
-//            o = new PrintStream("tests/out/rulare3.out");
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        System.setOut(o);
 
         Store.getInstance().displayWelcome();
 
